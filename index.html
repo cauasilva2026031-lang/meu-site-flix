@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Milhares de Filmes</title>
+    <title>MaxxFlixx - Streaming Grátis</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <div class="logo" onclick="carregarFilmesIniciais()">MaxxFlixx</div>
+        <div class="logo" onclick="restaurarCatalogo()">MaxxFlixx</div>
         <div class="busca-container">
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Buscar qualquer filme do mundo..." oninput="buscarFilmesAPI()">
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme no catálogo..." oninput="filtrarFilmes()">
         </div>
     </header>
 
     <main class="conteudo">
-        <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
+        <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
         <div class="grade-filmes" id="catalogo">
-            <p id="mensagemStatus" style="color: #666; padding: 20px;">Carregando catálogo completo...</p>
+            <!-- Gerado de forma ultra rápida pelo JavaScript local -->
         </div>
     </main>
 
@@ -33,81 +33,94 @@
     </div>
 
     <script>
-        // Chave pública revisada e espelhada para evitar bloqueios de rede
-        const API_KEY = '69ac222d861d856c5e2d6b3848b6bc16'; 
-        const BASE_URL = 'https://themoviedb.org';
-        const IMG_URL = 'https://tmdb.org';
-
-        // 1. Carrega os filmes populares
-        async function carregarFilmesIniciais() {
-            definirStatus("Carregando catálogo completo...");
-            document.getElementById('tituloSecao').innerText = "Filmes Populares";
-            try {
-                const resposta = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=pt-BR&page=1`);
-                if(!resposta.ok) throw new Error("Erro na requisição");
-                const dados = await resposta.json();
-                renderizarProdutos(dados.results);
-            } catch (erro) {
-                definirStatus("Erro ao conectar com o servidor de filmes. Tente recarregar a página.");
-                console.error(erro);
+        // BANCO DE DADOS INTEGRADO (Não depende de chaves externas, roda instantaneamente)
+        const meusFilmes = [
+            {
+                titulo: "Deadpool & Wolverine",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Divertida Mente 2",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Avatar: O Caminho da Água",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Homem-Aranha: Sem Volta para Casa",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Vingadores: Ultimato",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Interestelar",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Batman (2022)",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
+            },
+            {
+                titulo: "Vingadores: Guerra Infinita",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
             }
-        }
+        ];
 
-        // 2. Busca em tempo real
-        async function buscarFilmesAPI() {
-            const termo = document.getElementById('campoBusca').value.trim();
-            
-            if (termo.length === 0) {
-                carregarFilmesIniciais();
-                return;
-            }
-
-            document.getElementById('tituloSecao').innerText = `Resultados para: "${termo}"`;
-
-            try {
-                const resposta = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}&page=1`);
-                const dados = await resposta.json();
-                renderizarProdutos(dados.results);
-            } catch (erro) {
-                definirStatus("Erro ao buscar filmes.");
-            }
-        }
-
-        // 3. Renderiza os filmes na grade
-        function renderizarProdutos(filmes) {
+        function carregarCatalogo(listaDeFilmes) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
 
-            if (!filmes || filmes.length === 0) {
-                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum filme encontrado.</p>";
+            if (listaDeFilmes.length === 0) {
+                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum filme encontrado com esse nome.</p>";
                 return;
             }
 
-            filmes.forEach(filme => {
-                if (!filme.poster_path) return;
-
+            listaDeFilmes.forEach(filme => {
                 const card = document.createElement('div');
                 card.className = 'filme-card';
-                
-                const urlPlayer = `https://superflixapi.dev{filme.id}`;
-                card.setAttribute('onclick', `abrirPlayer('${urlPlayer}')`);
-
+                card.setAttribute('onclick', `abrirPlayer('${filme.video}')`);
                 card.innerHTML = `
-                    <img class="filme-capa" src="${IMG_URL}${filme.poster_path}" alt="${filme.title}">
+                    <img class="filme-capa" src="${filme.capa}" alt="${filme.titulo}">
                     <div class="filme-info">
-                        <div class="filme-titulo">${filme.title}</div>
+                        <div class="filme-titulo">${filme.titulo}</div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function definirStatus(mensagem) {
-            const container = document.getElementById('catalogo');
-            container.innerHTML = `<p style='color: #666; padding: 20px;'>${mensagem}</p>`;
+        function filtrarFilmes() {
+            const termoBusca = document.getElementById('campoBusca').value.toLowerCase().trim();
+            if(termoBusca === "") {
+                document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
+                carregarCatalogo(meusFilmes);
+                return;
+            }
+            
+            document.getElementById('tituloSecao').innerText = `Resultados para: "${termoBusca}"`;
+            const filmesFiltrados = meusFilmes.filter(filme => 
+                filme.titulo.toLowerCase().includes(termoBusca)
+            );
+            carregarCatalogo(filmesFiltrados);
         }
 
-        // 4. Funções do Player
+        function restaurarCatalogo() {
+            document.getElementById('campoBusca').value = "";
+            document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
+            carregarCatalogo(meusFilmes);
+        }
+
         function abrirPlayer(linkVideo) {
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
@@ -123,8 +136,8 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicialização
-        carregarFilmesIniciais();
+        // Inicializa o site instantaneamente
+        carregarCatalogo(meusFilmes);
     </script>
 </body>
 </html>

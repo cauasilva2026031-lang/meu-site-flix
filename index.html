@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Streaming Grátis</title>
+    <title>MaxxFlixx - Catálogo Liberado</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,63 +16,43 @@
     </header>
 
     <main class="conteudo">
-        <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
+        <h2 class="secao-titulo" id="tituloSecao">Clique para Assistir</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Gerado de forma ultra rápida pelo JavaScript local -->
+            <!-- Gerado localmente sem bloqueios -->
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo -->
-    <div id="meuModal" class="modal">
-        <div class="modal-conteudo">
-            <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
-            <div class="video-container">
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // BANCO DE DADOS INTEGRADO (Não depende de chaves externas, roda instantaneamente)
+        // BANCO DE DADOS COM IMAGENS DA WIKIPÉDIA (IMPOSSÍVEL BLOQUEAR)
         const meusFilmes = [
             {
                 titulo: "Deadpool & Wolverine",
-                capa: "https://tmdb.org",
+                capa: "https://wikimedia.org",
                 video: "https://superflixapi.dev"
             },
             {
                 titulo: "Divertida Mente 2",
-                capa: "https://tmdb.org",
+                capa: "https://wikimedia.org",
                 video: "https://superflixapi.dev"
             },
             {
                 titulo: "Avatar: O Caminho da Água",
-                capa: "https://tmdb.org",
+                capa: "https://wikimedia.org",
                 video: "https://superflixapi.dev"
             },
             {
                 titulo: "Homem-Aranha: Sem Volta para Casa",
-                capa: "https://tmdb.org",
+                capa: "https://wikimedia.org",
                 video: "https://superflixapi.dev"
             },
             {
                 titulo: "Vingadores: Ultimato",
-                capa: "https://tmdb.org",
+                capa: "https://wikimedia.org",
                 video: "https://superflixapi.dev"
             },
             {
                 titulo: "Interestelar",
-                capa: "https://tmdb.org",
-                video: "https://superflixapi.dev"
-            },
-            {
-                titulo: "Batman (2022)",
-                capa: "https://tmdb.org",
-                video: "https://superflixapi.dev"
-            },
-            {
-                titulo: "Vingadores: Guerra Infinita",
-                capa: "https://tmdb.org",
+                capa: "https://wikimedia.org",
                 video: "https://superflixapi.dev"
             }
         ];
@@ -89,7 +69,10 @@
             listaDeFilmes.forEach(filme => {
                 const card = document.createElement('div');
                 card.className = 'filme-card';
-                card.setAttribute('onclick', `abrirPlayer('${filme.video}')`);
+                
+                // Abre o player em uma nova aba para contornar o bloqueio de tela preta
+                card.setAttribute('onclick', `window.open('${filme.video}', '_blank')`);
+                
                 card.innerHTML = `
                     <img class="filme-capa" src="${filme.capa}" alt="${filme.titulo}">
                     <div class="filme-info">
@@ -103,7 +86,7 @@
         function filtrarFilmes() {
             const termoBusca = document.getElementById('campoBusca').value.toLowerCase().trim();
             if(termoBusca === "") {
-                document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
+                document.getElementById('tituloSecao').innerText = "Clique para Assistir";
                 carregarCatalogo(meusFilmes);
                 return;
             }
@@ -117,23 +100,8 @@
 
         function restaurarCatalogo() {
             document.getElementById('campoBusca').value = "";
-            document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
+            document.getElementById('tituloSecao').innerText = "Clique para Assistir";
             carregarCatalogo(meusFilmes);
-        }
-
-        function abrirPlayer(linkVideo) {
-            document.getElementById('videoPlayer').src = linkVideo;
-            document.getElementById('meuModal').style.display = 'flex';
-        }
-
-        function fecharPlayer() {
-            document.getElementById('videoPlayer').src = '';
-            document.getElementById('meuModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            let modal = document.getElementById('meuModal');
-            if (event.target == modal) { fecharPlayer(); }
         }
 
         // Inicializa o site instantaneamente

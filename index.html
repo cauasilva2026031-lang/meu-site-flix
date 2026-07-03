@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Catálogo</title>
+    <title>MaxxFlixx - Milhares de Filmes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,14 +11,14 @@
     <header>
         <div class="logo" onclick="restaurarCatalogo()">MaxxFlixx</div>
         <div class="busca-container">
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme no catálogo..." oninput="filtrarFilmes()">
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme (Ex: Avengers, Batman)..." oninput="buscarFilmesOMDb()">
         </div>
     </header>
 
     <main class="conteudo">
-        <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
+        <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Gerado de forma imediata pelo navegador -->
+            <p style="color: #666; padding: 20px;">Carregando catálogo completo...</p>
         </div>
     </main>
 
@@ -27,91 +27,105 @@
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox que autoriza a reprodução interna e segura pop-ups de vírus -->
+                <!-- Sandbox configurado para aceitar a API Warez internamente e desarmar pop-ups de vírus -->
                 <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS LOCAL BLINDADO (Sem chamadas de APIs externas)
-        const meusFilmes = [
-            {
-                titulo: "Deadpool & Wolverine",
-                capa: "https://wikimedia.org",
-                video: "https://warezcdn.com"
-            },
-            {
-                titulo: "Divertida Mente 2",
-                capa: "https://wikimedia.org",
-                video: "https://warezcdn.com"
-            },
-            {
-                titulo: "Avatar: O Caminho da Água",
-                capa: "https://wikimedia.org",
-                video: "https://warezcdn.com"
-            },
-            {
-                titulo: "Homem-Aranha: Sem Volta para Casa",
-                capa: "https://wikimedia.org",
-                video: "https://warezcdn.com"
-            },
-            {
-                titulo: "Vingadores: Ultimato",
-                capa: "https://wikimedia.org",
-                video: "https://warezcdn.com"
-            },
-            {
-                titulo: "Interestelar",
-                capa: "https://wikimedia.org",
-                video: "https://warezcdn.com"
-            }
-        ];
+        // SUA CHAVE DA OMDB CONFIGURADA
+        const OMDB_API_KEY = '4f830bd7'; 
+        const OMDB_BASE_URL = 'https://omdbapi.com';
 
-        function carregarCatalogo(listaDeFilmes) {
+        // Lista de grandes sucessos para preencher a tela inicial do site automaticamente
+        const termosIniciais = ['Avengers', 'Batman', 'Interstellar', 'Deadpool', 'Spiderman', 'Inside Out', 'Gladiator', 'Matrix'];
+
+        // 1. Carrega os filmes iniciais buscando os termos na OMDb API
+        async function carregarFilmesIniciais() {
             const container = document.getElementById('catalogo');
-            container.innerHTML = "";
+            container.innerHTML = "<p style='color: #666; padding: 20px;'>Carregando catálogo...</p>";
+            document.getElementById('tituloSecao').innerText = "Filmes Populares";
+            
+            let todosOsFilmes = [];
+            
+            for (const termo of termosIniciais) {
+                try {
+                    const resposta = await fetch(`${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&t=${termo}`);
+                    const filme = await resposta.json();
+                    if (filme.Response === "True" && filme.Poster !== "N/A") {
+                        todosOsFilmes.push(filme);
+                    }
+                } catch (e) {
+                    console.error("Erro ao puxar filme inicial:", e);
+                }
+            }
+            renderizarFilmes(todosOsFilmes);
+        }
 
-            if (listaDeFilmes.length === 0) {
-                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum filme encontrado com esse nome.</p>";
+        // 2. Busca automática em tempo real ao digitar na barra de pesquisa
+        let timeoutBusca = null;
+        function buscarFilmesOMDb() {
+            clearTimeout(timeoutBusca);
+            const termo = document.getElementById('campoBusca').value.trim();
+
+            if (termo.length < 3) {
+                if (termo.length === 0) carregarFilmesIniciais();
                 return;
             }
 
-            listaDeFilmes.forEach(filme => {
+            // Aguarda o usuário parar de digitar por 500ms antes de chamar a API (Evita travamentos de rede)
+            timeoutBusca = setTimeout(async () => {
+                document.getElementById('tituloSecao').innerText = `Resultados para: "${termo}"`;
+                try {
+                    const resposta = await fetch(`${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(termo)}&type=movie`);
+                    const dados = await resposta.json();
+                    
+                    if (dados.Response === "True") {
+                        renderizarFilmes(dados.Search);
+                    } else {
+                        document.getElementById('catalogo').innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum filme encontrado.</p>";
+                    }
+                } catch (erro) {
+                    console.error("Erro na busca:", erro);
+                }
+            }, 500);
+        }
+
+        // 3. Monta os cartões na tela usando os dados da OMDb e links internos da Warez
+        function renderizarFilmes(listaFilmes) {
+            const container = document.getElementById('catalogo');
+            container.innerHTML = "";
+
+            listaFilmes.forEach(filme => {
+                const poster = filme.Poster && filme.Poster !== "N/A" ?  filme.Poster : 'https://placeholder.com';
+                const imdbID = filme.imdbID;
+                const titulo = filme.Title;
+
                 const card = document.createElement('div');
                 card.className = 'filme-card';
-                card.setAttribute('onclick', `abrirPlayer('${filme.video}')`);
+                
+                // Pega o código universal do IMDb gerado pelo site OMDb e injeta na API de reprodução Warez embutida
+                const urlPlayerInterno = `https://warezcdn.com{imdbID}`;
+                card.setAttribute('onclick', `abrirPlayer('${urlPlayerInterno}')`);
+                
                 card.innerHTML = `
-                    <img class="filme-capa" src="${filme.capa}" alt="${filme.titulo}">
+                    <img class="filme-capa" src="${poster}" alt="${titulo}">
                     <div class="filme-info">
-                        <div class="filme-titulo">${filme.titulo}</div>
+                        <div class="filme-titulo">${titulo}</div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function filtrarFilmes() {
-            const termoBusca = document.getElementById('campoBusca').value.toLowerCase().trim();
-            if(termoBusca === "") {
-                document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
-                carregarCatalogo(meusFilmes);
-                return;
-            }
-            
-            document.getElementById('tituloSecao').innerText = `Resultados para: "${termoBusca}"`;
-            const filmesFiltrados = meusFilmes.filter(filme => 
-                filme.titulo.toLowerCase().includes(termoBusca)
-            );
-            carregarCatalogo(filmesFiltrados);
-        }
-
         function restaurarCatalogo() {
             document.getElementById('campoBusca').value = "";
-            document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
-            carregarCatalogo(meusFilmes);
+            document.getElementById('tituloSecao').innerText = "Filmes Populares";
+            carregarFilmesIniciais();
         }
 
+        // 4. Controles do Modal do Player Interno
         function abrirPlayer(linkVideo) {
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
@@ -127,8 +141,8 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Executa imediatamente o catálogo guardado localmente
-        carregarCatalogo(meusFilmes);
+        // Inicializa o site conectando com a OMDb API
+        carregarFilmesIniciais();
     </script>
 </body>
 </html>

@@ -3,93 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Catálogo Completo</title>
+    <title>MaxxFlixx - Milhares de Filmes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <div class="logo">MaxxFlixx</div>
+        <div class="logo" onclick="carregarFilmesIniciais()">MaxxFlixx</div>
         <div class="busca-container">
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme ou série..." oninput="filtrarFilmes()">
+            <!-- Pesquisa automática ao digitar -->
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Buscar qualquer filme do mundo..." oninput="buscarFilmesAPI()">
         </div>
     </header>
 
     <main class="conteudo">
-        <h2 class="secao-titulo">Filmes no Catálogo</h2>
+        <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Os cards serão criados aqui automaticamente -->
+            <p style="color: #666; padding: 20px;">Carregando catálogo completo...</p>
         </div>
     </main>
 
-    <!-- Modal do Player (Configurado para Filmes e Séries Externos) -->
+    <!-- Modal do Player de Vídeo Estilo TopFlix -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Parâmetros 'sandbox' e 'allow' ajudam a segurar o excesso de anúncios agressivos -->
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts opacity allow-same-origin allow-forms allow-pointer-lock"></iframe>
+                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // LISTA DE FILMES VIA API DE STREAMING
-        // Se for filme: use 'filme/ID' | Se for série: use 'serie/ID'
-        const meusFilmes = [
-            {
-                titulo: "Deadpool & Wolverine",
-                capa: "https://tmdb.org",
-                playerUrl: "https://superflixapi.dev"
-            },
-            {
-                titulo: "Divertida Mente 2",
-                capa: "https://tmdb.org",
-                playerUrl: "https://superflixapi.dev"
-            },
-            {
-                titulo: "Interestelar",
-                capa: "https://tmdb.org",
-                playerUrl: "https://superflixapi.dev"
-            },
-            {
-                titulo: "The Boys (Série)",
-                capa: "https://tmdb.org",
-                playerUrl: "https://superflixapi.dev"
+        // Chave pública de demonstração para carregar os dados dos filmes
+        const API_KEY = '69ac222d861d856c5e2d6b3848b6bc16'; 
+        const BASE_URL = 'https://themoviedb.org';
+        const IMG_URL = 'https://tmdb.org';
+
+        // 1. Carrega os filmes mais populares do mundo assim que o site abre
+        async function carregarFilmesIniciais() {
+            document.getElementById('tituloSecao').innerText = "Filmes Populares";
+            try {
+                const resposta = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=pt-BR&page=1`);
+                const dados = await resposta.json();
+                renderizarProdutos(dados.results);
+            } catch (erro) {
+                console.error("Erro ao carregar filmes:", erro);
             }
-        ];
+        }
 
-        function carregarCatalogo(listaDeFilmes) {
-            const container = document.getElementById('catalogo');
-            container.innerHTML = "";
-
-            if(listaDeFilmes.length === 0) {
-                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum título encontrado.</p>";
+        // 2. Busca automática em tempo real em uma lista de milhares de títulos
+        async function buscarFilmesAPI() {
+            const termo = document.getElementById('campoBusca').value.trim();
+            
+            if (termo.length === 0) {
+                carregarFilmesIniciais();
                 return;
             }
 
-            listaDeFilmes.forEach(filme => {
+            document.getElementById('tituloSecao').innerText = `Resultados para: "${termo}"`;
+
+            try {
+                const resposta = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}&page=1`);
+                const dados = await resposta.json();
+                renderizarProdutos(dados.results);
+            } catch (erro) {
+                console.error("Erro na busca:", erro);
+            }
+        }
+
+        // 3. Desenha os filmes na tela dinamicamente
+        function renderizarProdutos(filmes) {
+            const container = document.getElementById('catalogo');
+            container.innerHTML = "";
+
+            if (!filmes || Set.length === 0 || filmes.length === 0) {
+                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum filme encontrado.</p>";
+                return;
+            }
+
+            filmes.forEach(filme => {
+                // Ignora filmes que não possuem imagem de capa
+                if (!filme.poster_path) return;
+
                 const card = document.createElement('div');
                 card.className = 'filme-card';
-                card.setAttribute('onclick', `abrirPlayer('${filme.playerUrl}')`);
+                
+                // Conecta o ID do filme diretamente com o servidor de player estilo TopFlix
+                const urlPlayer = `https://superflixapi.dev{filme.id}`;
+                card.setAttribute('onclick', `abrirPlayer('${urlPlayer}')`);
+
                 card.innerHTML = `
-                    <img class="filme-capa" src="${filme.capa}" alt="${filme.titulo}">
+                    <img class="filme-capa" src="${IMG_URL}${filme.poster_path}" alt="${filme.title}">
                     <div class="filme-info">
-                        <div class="filme-titulo">${filme.titulo}</div>
+                        <div class="filme-titulo">${filme.title}</div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function filtrarFilmes() {
-            const termoBusca = document.getElementById('campoBusca').value.toLowerCase();
-            const filmesFiltrados = meusFilmes.filter(filme => 
-                filme.titulo.toLowerCase().includes(termoBusca)
-            );
-            carregarCatalogo(filmesFiltrados);
-        }
-
+        // 4. Funções de controle do Player de vídeo
         function abrirPlayer(linkVideo) {
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
@@ -105,8 +118,8 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicia o site carregando os dados
-        carregarCatalogo(meusFilmes);
+        // Inicialização automática do site
+        carregarFilmesIniciais();
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Streaming Grátis</title>
+    <title>MaxxFlixx - Catálogo Completo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,41 +16,46 @@
     </header>
 
     <main class="conteudo">
-        <h2 class="secao-titulo">Filmes e Séries do Catálogo</h2>
+        <h2 class="secao-titulo">Filmes no Catálogo</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Gerado automaticamente pelo JavaScript -->
+            <!-- Os cards serão criados aqui automaticamente -->
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo para Servidores Externos -->
+    <!-- Modal do Player (Configurado para Filmes e Séries Externos) -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Configurado para aceitar players de servidores de terceiros -->
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen-fullscreen allow="autoplay; encrypted-media"></iframe>
+                <!-- Parâmetros 'sandbox' e 'allow' ajudam a segurar o excesso de anúncios agressivos -->
+                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts opacity allow-same-origin allow-forms allow-pointer-lock"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS COM PLAYERS DE STREAMING (ESTILO TOPFLIX)
-        // Usando o player da SuperFlix API com capas oficiais do TMDB
+        // LISTA DE FILMES VIA API DE STREAMING
+        // Se for filme: use 'filme/ID' | Se for série: use 'serie/ID'
         const meusFilmes = [
             {
-                titulo: "Avatar: O Caminho da Água",
+                titulo: "Deadpool & Wolverine",
                 capa: "https://tmdb.org",
-                video: "https://superflixapi.dev" // ID do filme na API
+                playerUrl: "https://superflixapi.dev"
             },
             {
-                titulo: "Homem-Aranha: Sem Volta para Casa",
+                titulo: "Divertida Mente 2",
                 capa: "https://tmdb.org",
-                video: "https://superflixapi.dev"
+                playerUrl: "https://superflixapi.dev"
             },
             {
-                titulo: "Vingadores: Ultimato",
+                titulo: "Interestelar",
                 capa: "https://tmdb.org",
-                video: "https://superflixapi.dev"
+                playerUrl: "https://superflixapi.dev"
+            },
+            {
+                titulo: "The Boys (Série)",
+                capa: "https://tmdb.org",
+                playerUrl: "https://superflixapi.dev"
             }
         ];
 
@@ -66,7 +71,7 @@
             listaDeFilmes.forEach(filme => {
                 const card = document.createElement('div');
                 card.className = 'filme-card';
-                card.setAttribute('onclick', `abrirPlayer('${filme.video}')`);
+                card.setAttribute('onclick', `abrirPlayer('${filme.playerUrl}')`);
                 card.innerHTML = `
                     <img class="filme-capa" src="${filme.capa}" alt="${filme.titulo}">
                     <div class="filme-info">
@@ -100,6 +105,7 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
+        // Inicia o site carregando os dados
         carregarCatalogo(meusFilmes);
     </script>
 </body>

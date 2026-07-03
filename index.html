@@ -3,99 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Catálogo Geral Automatizado</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MaxxFlix</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <header>
-        <div class="logo" onclick="carregarCatalogoGlobal()">MaxxFlixx</div>
-        <div class="busca-container">
-            <!-- Consulta automática global integrada ao indexador unificado -->
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme ou série do mundo..." oninput="pesquisarFilmeGlobal()">
+<header>
+
+    <div class="logo">
+        MaxxFlix
+    </div>
+
+    <nav>
+
+        <a href="#">Início</a>
+        <a href="#">Filmes</a>
+        <a href="#">Séries</a>
+        <a href="#">Minha Lista</a>
+
+    </nav>
+
+    <div class="pesquisa">
+
+        <input
+            type="text"
+            id="campoBusca"
+            placeholder="Pesquisar filmes ou séries..."
+        >
+
+    </div>
+
+</header>
+
+<section id="banner">
+
+    <div class="banner-info">
+
+        <h1 id="bannerTitulo">
+            Carregando...
+        </h1>
+
+        <p id="bannerDescricao">
+            Aguarde...
+        </p>
+
+        <div class="botoes">
+
+            <button id="assistir">
+                ▶ Assistir Trailer
+            </button>
+
+            <button id="detalhes">
+                Mais Informações
+            </button>
+
         </div>
-    </header>
 
-    <main class="conteudo">
-        <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
-        <div class="grade-filmes" id="catalogo">
-            <p style="color: #666; padding: 20px;">Sincronizando banco de dados...</p>
+    </div>
+
+</section>
+
+<main>
+
+    <section>
+
+        <h2>🔥 Em Alta</h2>
+
+        <div class="carrossel" id="trending">
+
         </div>
-    </main>
 
-    <script>
-        // Chave e rotas públicas universais de distribuição de catálogo de código aberto
-        const CHAVE_PROVEDOR = '69ac222d861d856c5e2d6b3848b6bc16'; 
-        const URL_PROVEDOR = 'https://themoviedb.org';
-        const ROTA_POSTER = 'https://tmdb.org';
+    </section>
 
-        // 1. Puxa instantaneamente os milhares de filmes mais assistidos do mundo
-        async function carregarCatalogoGlobal() {
-            document.getElementById('tituloSecao').innerText = "Filmes Populares";
-            try {
-                const conexao = await fetch(URL_PROVEDOR + "/movie/popular?api_key=" + CHAVE_PROVEDOR + "&language=pt-BR&page=1");
-                const dados = await conexao.json();
-                renderizarCardsPobreflix(dados.results);
-            } catch (erro) {
-                console.error("Falha na sincronização de mídia:", erro);
-            }
-        }
+    <section>
 
-        // 2. Campo de varredura inteligente para qualquer título digitado
-        let delayDigitacao = null;
-        function pesquisarFilmeGlobal() {
-            clearTimeout(delayDigitacao);
-            const busca = document.getElementById('campoBusca').value.trim();
-            
-            if (busca.length === 0) {
-                carregarCatalogoGlobal();
-                return;
-            }
+        <h2>🎬 Filmes Populares</h2>
 
-            delayDigitacao = setTimeout(async () => {
-                document.getElementById('tituloSecao').innerText = 'Resultados para: "' + busca + '"';
-                try {
-                    const conexao = await fetch(URL_PROVEDOR + "/search/movie?api_key=" + CHAVE_PROVEDOR + "&language=pt-BR&query=" + encodeURIComponent(busca) + "&page=1");
-                    const dados = await conexao.json();
-                    renderizarCardsPobreflix(dados.results);
-                } catch (erro) {
-                    console.error("Falha ao buscar mídias:", erro);
-                }
-            }, 300);
-        }
+        <div class="carrossel" id="popular">
 
-        // 3. Renderização profissional de cards idêntica aos sites famosos
-        function renderizarCardsPobreflix(listaFilmes) {
-            const container = document.getElementById('catalogo');
-            container.innerHTML = "";
+        </div>
 
-            if (!listaFilmes || listaFilmes.length === 0) {
-                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum título localizado.</p>";
-                return;
-            }
+    </section>
 
-            listaFilmes.forEach(filme => {
-                if (!filme.poster_path) return;
+    <section>
 
-                const card = document.createElement('div');
-                card.className = 'filme-card';
-                
-                // Conexão direta com o player master estável da VidSrc (Usado pelas grandes plataformas)
-                var linkStreamMaster = "https://vidsrc.me" + filme.id;
-                card.setAttribute('onclick', "window.open('" + linkStreamMaster + "', '_blank')");
-                
-                card.innerHTML = `
-                    <img class="filme-capa" src="${ROTA_POSTER + filme.poster_path}" alt="${filme.title}">
-                    <div class="filme-info">
-                        <div class="filme-titulo">${filme.title}</div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
+        <h2>⭐ Melhor Avaliados</h2>
 
-        // Inicialização em tempo recorde
-        carregarCatalogoGlobal();
-    </script>
+        <div class="carrossel" id="topRated">
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <h2>📺 Séries Populares</h2>
+
+        <div class="carrossel" id="series">
+
+        </div>
+
+    </section>
+
+    <section id="resultadoBusca" style="display:none;">
+
+        <h2>Resultados</h2>
+
+        <div class="carrossel" id="busca">
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+
+    <p>
+        MaxxFlix © 2026
+    </p>
+
+    <p>
+        Catálogo fornecido pela API oficial do TMDB.
+    </p>
+
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Velocidade Máxima</title>
+    <title>MaxxFlixx - Streaming Grátis</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,20 +11,30 @@
     <header>
         <div class="logo" onclick="restaurarCatalogo()">MaxxFlixx</div>
         <div class="busca-container">
-            <!-- Busca local instantânea a cada letra digitada -->
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme ou série no catálogo..." oninput="filtrarFilmesLocal()">
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme no catálogo..." oninput="filtrarFilmesLocal()">
         </div>
     </header>
 
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Os cards serão criados em milissegundos aqui -->
+            <!-- Gerado em milissegundos aqui -->
         </div>
     </main>
 
+    <!-- Modal do Player de Vídeo INTERNO -->
+    <div id="meuModal" class="modal">
+        <div class="modal-conteudo">
+            <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
+            <div class="video-container">
+                <!-- Sandbox configurado para aceitar o reprodutor de vídeo e barrar pop-ups de vírus -->
+                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // BANCO DE DADOS LOCAL GIGANTE (Carregamento instantâneo em 1 segundo)
+        // BANCO DE DADOS LOCAL (Carregamento instantâneo)
         const catálogoFilmes = [
             { t: "Deadpool & Wolverine", c: "https://wikimedia.org", id: "533535" },
             { t: "Divertida Mente 2", c: "https://wikimedia.org", id: "1022789" },
@@ -44,7 +54,6 @@
             { t: "Shrek", c: "https://wikimedia.org", id: "808" }
         ];
 
-        // Renderiza tudo na tela em milissegundos
         function exibirCatalogo(lista) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
@@ -58,9 +67,9 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // Abre o player SuperFlix Pro sem passar pelo bloqueio do Cloudflare do iframe
-                const urlPlayer = `https://superflixapi.pro{filme.id}`;
-                card.setAttribute('onclick', `window.open('${urlPlayer}', '_blank')`);
+                // CONCATENAÇÃO SEGURA: Monta o link somando os textos para evitar o erro de sintaxe literal
+                const urlPlayer = "https://superflixapi.pro" + filme.id;
+                card.setAttribute('onclick', "abrirPlayer('" + urlPlayer + "')");
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${filme.c}" alt="${filme.t}">
@@ -72,7 +81,6 @@
             });
         }
 
-        // Pesquisa local em tempo real (Sem carregar nada da internet, velocidade pura)
         function filtrarFilmesLocal() {
             const busca = document.getElementById('campoBusca').value.toLowerCase().trim();
             
@@ -95,7 +103,21 @@
             exibirCatalogo(catálogoFilmes);
         }
 
-        // Inicialização em tempo recorde
+        function abrirPlayer(linkVideo) {
+            document.getElementById('videoPlayer').src = linkVideo;
+            document.getElementById('meuModal').style.display = 'flex';
+        }
+
+        function fecharPlayer() {
+            document.getElementById('videoPlayer').src = '';
+            document.getElementById('meuModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById('meuModal');
+            if (event.target == modal) { fecharPlayer(); }
+        }
+
         exibirCatalogo(catálogoFilmes);
     </script>
 </body>

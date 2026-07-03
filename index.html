@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Streaming Grátis</title>
+    <title>MaxxFlixx - Player Direto</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +11,6 @@
     <header>
         <div class="logo" onclick="restaurarCatalogo()">MaxxFlixx</div>
         <div class="busca-container">
-            <!-- Barra de pesquisa instantânea que filtra localmente em menos de 1 segundo -->
             <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme no catálogo..." oninput="filtrarFilmesLocal()">
         </div>
     </header>
@@ -19,43 +18,36 @@
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Os cards serão criados de forma imediata pelo JavaScript -->
+            <!-- Gerado instantaneamente pelo JavaScript -->
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo INTERNO -->
+    <!-- Modal com Tag de Vídeo Nativa (Livre de Bloqueios de IP) -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox configurado de forma segura para rodar o player interno sem pop-ups de vírus -->
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+                <!-- Usamos a tag <video> do HTML5 com barra de controles padrão -->
+                <video id="videoPlayer" src="" controls autoplay controlsList="nodownload"></video>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS LOCAL EXPANDIDO (Carregamento instantâneo sem depender de chaves de API externas)
+        // BANCO DE DADOS LOCAL COM ARQUIVOS DE VÍDEO DIRETOS (MP4)
         const catalogoFilmes = [
-            { t: "Deadpool & Wolverine", c: "https://wikimedia.org", id: "533535" },
-            { t: "Divertida Mente 2", c: "https://wikimedia.org", id: "1022789" },
-            { t: "Avatar: O Caminho da Água", c: "https://wikimedia.org", id: "76600" },
-            { t: "Homem-Aranha: Sem Volta para Casa", c: "https://wikimedia.org", id: "634649" },
-            { t: "Vingadores: Ultimato", c: "https://wikimedia.org", id: "299534" },
-            { t: "Interestelar", c: "https://wikimedia.org", id: "157336" },
-            { t: "Batman (2022)", c: "https://wikimedia.org", id: "414906" },
-            { t: "Vingadores: Guerra Infinita", c: "https://wikimedia.org", id: "299536" },
-            { t: "Coringa (Joker)", c: "https://wikimedia.org", id: "475554" },
-            { t: "O Rei Leão (Live Action)", c: "https://wikimedia.org", id: "420818" },
-            { t: "Barbie (2023)", c: "https://wikimedia.org", id: "346698" },
-            { t: "Oppenheimer", c: "https://wikimedia.org", id: "872585" },
-            { t: "Pantera Negra", c: "https://wikimedia.org", id: "284054" },
-            { t: "Gladiador (2000)", c: "https://wikimedia.org", id: "98" },
-            { t: "Matrix (1999)", c: "https://wikimedia.org", id: "603" },
-            { t: "Shrek", c: "https://wikimedia.org", id: "808" }
+            { 
+                t: "Animação de Teste (Big Buck Bunny)", 
+                c: "https://wikimedia.org", 
+                urlVideo: "https://googleapis.com" 
+            },
+            { 
+                t: "Elefantes Dream", 
+                c: "https://wikimedia.org", 
+                urlVideo: "https://googleapis.com" 
+            }
         ];
 
-        // Desenha os filmes na tela de forma imediata
         function exibirCatalogo(lista) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
@@ -68,13 +60,7 @@
             lista.forEach(filme => {
                 const card = document.createElement('div');
                 card.className = 'filme-card';
-                
-                // Variáveis totalmente isoladas com strings puras para o navegador não cometer erros de junção de link
-                var linkBaseDoProvedor = "https://superflixapi.pro";
-                var numeroIdentificador = filme.id;
-                var urlFinalDoPlayer = linkBaseDoProvedor + numeroIdentificador;
-                
-                card.setAttribute('onclick', "abrirPlayer('" + urlFinalDoPlayer + "')");
+                card.setAttribute('onclick', `abrirPlayer('${filme.urlVideo}')`);
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${filme.c}" alt="${filme.t}">
@@ -86,7 +72,6 @@
             });
         }
 
-        // Filtro em tempo real na lista local (Velocidade instantânea)
         function filtrarFilmesLocal() {
             const busca = document.getElementById('campoBusca').value.toLowerCase().trim();
             
@@ -109,14 +94,17 @@
             exibirCatalogo(catalogoFilmes);
         }
 
-        // Funções do Modal do Player
         function abrirPlayer(linkVideo) {
-            document.getElementById('videoPlayer').src = linkVideo;
+            const player = document.getElementById('videoPlayer');
+            player.src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
+            player.play();
         }
 
         function fecharPlayer() {
-            document.getElementById('videoPlayer').src = '';
+            const player = document.getElementById('videoPlayer');
+            player.pause();
+            player.src = '';
             document.getElementById('meuModal').style.display = 'none';
         }
 
@@ -125,7 +113,6 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicializa a exibição na hora
         exibirCatalogo(catalogoFilmes);
     </script>
 </body>

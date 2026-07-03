@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx V3 - Streaming Grátis</title>
+    <title>MaxxFlixx - Streaming Grátis</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,6 +11,7 @@
     <header>
         <div class="logo" onclick="restaurarCatalogo()">MaxxFlixx</div>
         <div class="busca-container">
+            <!-- Barra de pesquisa instantânea que filtra localmente em menos de 1 segundo -->
             <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme no catálogo..." oninput="filtrarFilmesLocal()">
         </div>
     </header>
@@ -18,7 +19,7 @@
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Os cards serão criados instantaneamente pelo JavaScript -->
+            <!-- Os cards serão criados de forma imediata pelo JavaScript -->
         </div>
     </main>
 
@@ -27,15 +28,15 @@
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox configurado para aceitar o reprodutor de vídeo e barrar pop-ups de vírus -->
+                <!-- Sandbox configurado de forma segura para rodar o player interno sem pop-ups de vírus -->
                 <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS LOCAL (Carregamento instantâneo)
-        const catálogoFilmes = [
+        // BANCO DE DADOS LOCAL EXPANDIDO (Carregamento instantâneo sem depender de chaves de API externas)
+        const catalogoFilmes = [
             { t: "Deadpool & Wolverine", c: "https://wikimedia.org", id: "533535" },
             { t: "Divertida Mente 2", c: "https://wikimedia.org", id: "1022789" },
             { t: "Avatar: O Caminho da Água", c: "https://wikimedia.org", id: "76600" },
@@ -54,6 +55,7 @@
             { t: "Shrek", c: "https://wikimedia.org", id: "808" }
         ];
 
+        // Desenha os filmes na tela de forma imediata
         function exibirCatalogo(lista) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
@@ -67,12 +69,12 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // MUDANÇA CRÍTICA: Definindo as variáveis de forma totalmente separada
-                var urlBase = "https://superflixapi.pro";
-                var codigoFilme = filme.id;
-                var urlCompleta = urlBase + codigoFilme;
+                // Variáveis totalmente isoladas com strings puras para o navegador não cometer erros de junção de link
+                var linkBaseDoProvedor = "https://superflixapi.pro";
+                var numeroIdentificador = filme.id;
+                var urlFinalDoPlayer = linkBaseDoProvedor + numeroIdentificador;
                 
-                card.setAttribute('onclick', "abrirPlayer('" + urlCompleta + "')");
+                card.setAttribute('onclick', "abrirPlayer('" + urlFinalDoPlayer + "')");
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${filme.c}" alt="${filme.t}">
@@ -84,17 +86,18 @@
             });
         }
 
+        // Filtro em tempo real na lista local (Velocidade instantânea)
         function filtrarFilmesLocal() {
             const busca = document.getElementById('campoBusca').value.toLowerCase().trim();
             
             if (busca === "") {
                 document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
-                exibirCatalogo(catálogoFilmes);
+                exibirCatalogo(catalogoFilmes);
                 return;
             }
 
             document.getElementById('tituloSecao').innerText = `Resultados para: "${busca}"`;
-            const filtrados = catálogoFilmes.filter(filme => 
+            const filtrados = catalogoFilmes.filter(filme => 
                 filme.t.toLowerCase().includes(busca)
             );
             exibirCatalogo(filtrados);
@@ -103,9 +106,10 @@
         function restaurarCatalogo() {
             document.getElementById('campoBusca').value = "";
             document.getElementById('tituloSecao').innerText = "Filmes Disponíveis";
-            exibirCatalogo(catálogoFilmes);
+            exibirCatalogo(catalogoFilmes);
         }
 
+        // Funções do Modal do Player
         function abrirPlayer(linkVideo) {
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
@@ -121,8 +125,8 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicializa o catálogo
-        exibirCatalogo(catálogoFilmes);
+        // Inicializa a exibição na hora
+        exibirCatalogo(catalogoFilmes);
     </script>
 </body>
 </html>

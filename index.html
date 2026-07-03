@@ -1,37 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>MaxxFlix</title>
 
     <link rel="stylesheet" href="css/style.css">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
+
 <body>
 
 <header>
 
-    <div class="logo">
+    <div class="logo" onclick="location.reload()">
         MaxxFlix
     </div>
 
     <nav>
 
         <a href="#">Início</a>
-        <a href="#">Filmes</a>
-        <a href="#">Séries</a>
-        <a href="#">Minha Lista</a>
+
+        <a href="#popular">Filmes</a>
+
+        <a href="#series">Séries</a>
+
+        <a href="favoritos.html">Favoritos</a>
 
     </nav>
 
     <div class="pesquisa">
 
         <input
-            type="text"
             id="campoBusca"
+            type="search"
             placeholder="Pesquisar filmes ou séries..."
         >
 
@@ -44,21 +51,29 @@
     <div class="banner-info">
 
         <h1 id="bannerTitulo">
+
             Carregando...
+
         </h1>
 
         <p id="bannerDescricao">
+
             Aguarde...
+
         </p>
 
         <div class="botoes">
 
             <button id="assistir">
+
                 ▶ Assistir Trailer
+
             </button>
 
             <button id="detalhes">
+
                 Mais Informações
+
             </button>
 
         </div>
@@ -69,67 +84,71 @@
 
 <main>
 
-    <section>
+<section>
 
-        <h2>🔥 Em Alta</h2>
+<h2>🔥 Em Alta</h2>
 
-        <div class="carrossel" id="trending">
+<div class="carrossel" id="trending">
 
-        </div>
+</div>
 
-    </section>
+</section>
 
-    <section>
+<section>
 
-        <h2>🎬 Filmes Populares</h2>
+<h2>🎬 Filmes Populares</h2>
 
-        <div class="carrossel" id="popular">
+<div class="carrossel" id="popular">
 
-        </div>
+</div>
 
-    </section>
+</section>
 
-    <section>
+<section>
 
-        <h2>⭐ Melhor Avaliados</h2>
+<h2>⭐ Melhores Avaliados</h2>
 
-        <div class="carrossel" id="topRated">
+<div class="carrossel" id="topRated">
 
-        </div>
+</div>
 
-    </section>
+</section>
 
-    <section>
+<section>
 
-        <h2>📺 Séries Populares</h2>
+<h2>📺 Séries Populares</h2>
 
-        <div class="carrossel" id="series">
+<div class="carrossel" id="series">
 
-        </div>
+</div>
 
-    </section>
+</section>
 
-    <section id="resultadoBusca" style="display:none;">
+<section id="resultadoBusca" style="display:none;">
 
-        <h2>Resultados</h2>
+<h2>🔎 Resultados</h2>
 
-        <div class="carrossel" id="busca">
+<div class="carrossel" id="busca">
 
-        </div>
+</div>
 
-    </section>
+</section>
 
 </main>
 
 <footer>
 
-    <p>
-        MaxxFlix © 2026
-    </p>
+<p>
 
-    <p>
-        Catálogo fornecido pela API oficial do TMDB.
-    </p>
+MaxxFlix © 2026
+
+</p>
+
+<p>
+
+Catálogo fornecido pela API do TMDB.
+
+</p>
 
 </footer>
 
@@ -137,4 +156,5 @@
 <script src="js/app.js"></script>
 
 </body>
+
 </html>

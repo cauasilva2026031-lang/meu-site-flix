@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Milhares de Filmes</title>
+    <title>MaxxFlixx V2 - Streaming Completo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -27,18 +27,15 @@
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox configurado para aceitar a API e travar pop-ups automáticos de vírus -->
                 <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÃO DA OMDB
         const OMDB_API_KEY = '4f830bd7'; 
         const OMDB_BASE_URL = 'https://omdbapi.com';
 
-        // Lista de sucessos iniciais
         const termosIniciais = ['Avengers', 'Batman', 'Interstellar', 'Deadpool', 'Spiderman', 'Inside Out', 'Gladiator', 'Matrix'];
 
         async function carregarFilmesIniciais() {
@@ -95,15 +92,15 @@
 
             listaFilmes.forEach(filme => {
                 const poster = filme.Poster && filme.Poster !== "N/A" ? filme.Poster : 'https://placeholder.com';
-                const imdbID = filme.imdbID;
+                const idFilme = filme.imdbID;
                 const titulo = filme.Title;
 
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // CORREÇÃO: Link com as barras corretas para o servidor de streaming funcionar interno
-                const urlPlayerInterno = `https://warezcdn.link{imdbID}`;
-                card.setAttribute('onclick', `abrirPlayer('${urlPlayerInterno}')`);
+                // Forçando a montagem limpa do link para a Vercel ler do zero
+                const linkFinal = "https://warezcdn.link" + idFilme;
+                card.setAttribute('onclick', "abrirPlayer('" + linkFinal + "')");
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${poster}" alt="${titulo}">

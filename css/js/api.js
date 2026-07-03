@@ -2,7 +2,7 @@
 // CONFIGURAÇÃO DA API
 // ==========================
 
-const API_KEY = "4f830bd7";
+const API_KEY = "5177d85911655b20a5f8203aec57c6d2";
 
 const API = "https://api.themoviedb.org/3";
 

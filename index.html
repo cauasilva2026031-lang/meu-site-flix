@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Player Direto</title>
+    <title>MaxxFlixx - Catálogo Pronto</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,29 +22,39 @@
         </div>
     </main>
 
-    <!-- Modal com Tag de Vídeo Nativa (Livre de Bloqueios de IP) -->
+    <!-- Modal do Player de Vídeo INTERNO -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Usamos a tag <video> do HTML5 com barra de controles padrão -->
-                <video id="videoPlayer" src="" controls autoplay controlsList="nodownload"></video>
+                <!-- Iframe limpo e configurado com as permissões corretas exigidas para reprodução externa -->
+                <iframe id="videoPlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS LOCAL COM ARQUIVOS DE VÍDEO DIRETOS (MP4)
+        // BANCO DE DADOS LOCAL COM TRAILERS EM ALTA VELOCIDADE (Uso do sistema /embed/)
         const catalogoFilmes = [
             { 
-                t: "Animação de Teste (Big Buck Bunny)", 
+                t: "Deadpool & Wolverine", 
                 c: "https://wikimedia.org", 
-                urlVideo: "https://googleapis.com" 
+                urlVideo: "https://youtube.com" 
             },
             { 
-                t: "Elefantes Dream", 
+                t: "Divertida Mente 2", 
                 c: "https://wikimedia.org", 
-                urlVideo: "https://googleapis.com" 
+                urlVideo: "https://youtube.com" 
+            },
+            { 
+                t: "Avatar: O Caminho da Água", 
+                c: "https://wikimedia.org", 
+                urlVideo: "https://youtube.com" 
+            },
+            { 
+                t: "Homem-Aranha: Sem Volta para Casa", 
+                c: "https://wikimedia.org", 
+                urlVideo: "https://youtube.com" 
             }
         ];
 
@@ -95,16 +105,12 @@
         }
 
         function abrirPlayer(linkVideo) {
-            const player = document.getElementById('videoPlayer');
-            player.src = linkVideo;
+            document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
-            player.play();
         }
 
         function fecharPlayer() {
-            const player = document.getElementById('videoPlayer');
-            player.pause();
-            player.src = '';
+            document.getElementById('videoPlayer').src = '';
             document.getElementById('meuModal').style.display = 'none';
         }
 

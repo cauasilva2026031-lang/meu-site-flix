@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Streaming Grátis</title>
+    <title>MaxxFlixx V3 - Streaming Grátis</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -67,9 +67,12 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // CORREÇÃO FINAL: União de textos tradicional com '+' para eliminar erros literais
-                const urlPlayer = "https://superflixapi.pro" + filme.id;
-                card.setAttribute('onclick', "abrirPlayer('" + urlPlayer + "')");
+                // MUDANÇA CRÍTICA: Definindo as variáveis de forma totalmente separada
+                var urlBase = "https://superflixapi.pro";
+                var codigoFilme = filme.id;
+                var urlCompleta = urlBase + codigoFilme;
+                
+                card.setAttribute('onclick', "abrirPlayer('" + urlCompleta + "')");
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${filme.c}" alt="${filme.t}">

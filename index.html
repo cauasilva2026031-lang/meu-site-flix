@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Player Integrado</title>
+    <title>MaxxFlixx - Catálogo Completo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,23 +22,14 @@
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo INTERNO (SuperFlix) -->
-    <div id="meuModal" class="modal">
-        <div class="modal-conteudo">
-            <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
-            <div class="video-container">
-                <!-- Servidor SuperFlix configurado internamente -->
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
-            </div>
-        </div>
-    </div>
+    <!-- O Modal interno foi removido para que o Cloudflare não bloqueie a reprodução do filme -->
 
     <script>
-        // CONFIGURAÇÃO DA OMDB
+        // CONFIGURAÇÃO DA OMDB COM A SUA CHAVE
         const OMDB_API_KEY = '4f830bd7'; 
         const OMDB_BASE_URL = 'https://omdbapi.com';
 
-        // Lista de sucessos iniciais
+        // Lista de sucessos para preencher a tela inicial do site
         const termosIniciais = ['Avengers', 'Batman', 'Interstellar', 'Deadpool', 'Spiderman', 'Inside Out', 'Gladiator', 'Matrix'];
 
         async function carregarFilmesIniciais() {
@@ -95,15 +86,18 @@
 
             listaFilmes.forEach(filme => {
                 const poster = filme.Poster && filme.Poster !== "N/A" ? filme.Poster : 'https://placeholder.com';
-                const imdbID = filme.imdbID;
+                const idFilmeCompleto = filme.imdbID;
                 const titulo = filme.Title;
 
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // MUDANÇA AQUI: Usando o servidor estável do SuperFlix que roda dentro do iframe do site
-                const urlPlayerInterno = `https://superflixapi.dev{imdbID}`;
-                card.setAttribute('onclick', `abrirPlayer('${urlPlayerInterno}')`);
+                // Remove o "tt" do início do ID para mandar o número puro exigido pela API do SuperFlix Pro
+                const idNumerico = idFilmeCompleto.replace('tt', '');
+                
+                // Abre o player em uma nova aba limpa onde o Cloudflare funciona sem travar
+                const urlPlayerValida = `https://superflixapi.pro{idNumerico}`;
+                card.setAttribute('onclick', `window.open('${urlPlayerValida}', '_blank')`);
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${poster}" alt="${titulo}">
@@ -119,21 +113,6 @@
             document.getElementById('campoBusca').value = "";
             document.getElementById('tituloSecao').innerText = "Filmes Populares";
             carregarFilmesIniciais();
-        }
-
-        function abrirPlayer(linkVideo) {
-            document.getElementById('videoPlayer').src = linkVideo;
-            document.getElementById('meuModal').style.display = 'flex';
-        }
-
-        function fecharPlayer() {
-            document.getElementById('videoPlayer').src = '';
-            document.getElementById('meuModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            let modal = document.getElementById('meuModal');
-            if (event.target == modal) { fecharPlayer(); }
         }
 
         carregarFilmesIniciais();

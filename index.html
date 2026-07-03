@@ -16,40 +16,41 @@
     </header>
 
     <main class="conteudo">
-        <h2 class="secao-titulo">Todos os Títulos</h2>
+        <h2 class="secao-titulo">Filmes e Séries do Catálogo</h2>
         <div class="grade-filmes" id="catalogo">
             <!-- Gerado automaticamente pelo JavaScript -->
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo Corrigido -->
+    <!-- Modal do Player de Vídeo para Servidores Externos -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Adicionado parâmetros de segurança exigidos pelo YouTube -->
-                <iframe id="videoPlayer" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <!-- Configurado para aceitar players de servidores de terceiros -->
+                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen-fullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS COM CAPAS DA WIKIMEDIA (NÃO QUEBRAM)
+        // BANCO DE DADOS COM PLAYERS DE STREAMING (ESTILO TOPFLIX)
+        // Usando o player da SuperFlix API com capas oficiais do TMDB
         const meusFilmes = [
             {
-                titulo: "Big Buck Bunny (Desenho)",
-                capa: "https://wikimedia.org",
-                video: "https://youtube.com"
+                titulo: "Avatar: O Caminho da Água",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev" // ID do filme na API
             },
             {
-                titulo: "Sintel (Animação)",
-                capa: "https://wikimedia.org",
-                video: "https://youtube.com"
+                titulo: "Homem-Aranha: Sem Volta para Casa",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
             },
             {
-                titulo: "Tears of Steel (Ficção)",
-                capa: "https://wikimedia.org",
-                video: "https://youtube.com"
+                titulo: "Vingadores: Ultimato",
+                capa: "https://tmdb.org",
+                video: "https://superflixapi.dev"
             }
         ];
 
@@ -85,7 +86,6 @@
         }
 
         function abrirPlayer(linkVideo) {
-            // Garante que o link use a API correta do YouTube
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
         }
@@ -100,7 +100,6 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicializa o catálogo
         carregarCatalogo(meusFilmes);
     </script>
 </body>

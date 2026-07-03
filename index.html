@@ -27,7 +27,7 @@
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox configurado para aceitar a API Warez e travar pop-ups automáticos de vírus -->
+                <!-- Sandbox configurado para aceitar a API e travar pop-ups automáticos de vírus -->
                 <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
@@ -101,8 +101,8 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // CORREÇÃO AQUI: Montando a URL do player juntando o texto com o ID correto do IMDb
-                const urlPlayerInterno = 'https://warezcdn.com' + imdbID;
+                // CORREÇÃO: Link com as barras corretas para o servidor de streaming funcionar interno
+                const urlPlayerInterno = `https://warezcdn.link{imdbID}`;
                 card.setAttribute('onclick', `abrirPlayer('${urlPlayerInterno}')`);
                 
                 card.innerHTML = `

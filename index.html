@@ -3,152 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - MP4 Streaming</title>
+    <title>MaxxFlixx - Catálogo Geral Automatizado</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <div class="logo" onclick="carregarMilharesDeFilmes()">MaxxFlixx</div>
+        <div class="logo" onclick="carregarCatalogoGlobal()">MaxxFlixx</div>
         <div class="busca-container">
-            <!-- Barra de pesquisa automática conectada ao banco global da OMDb -->
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme ou série..." oninput="buscarNaAPI()">
+            <!-- Consulta automática global integrada ao indexador unificado -->
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme ou série do mundo..." oninput="pesquisarFilmeGlobal()">
         </div>
     </header>
 
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
         <div class="grade-filmes" id="catalogo">
-            <p style="color: #666; padding: 20px;">Gerando catálogo em MP4...</p>
+            <p style="color: #666; padding: 20px;">Sincronizando banco de dados...</p>
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo INTERNO -->
-    <div id="meuModal" class="modal">
-        <div class="modal-conteudo">
-            <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
-            <div class="video-container">
-                <!-- Iframe configurado para reproduzir o fluxo MP4 em alta velocidade -->
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // CONFIGURAÇÃO COM A SUA CHAVE ATIVA DA OMDB
-        const API_KEY = '4f830bd7'; 
-        const BASE_URL = 'https://omdbapi.com';
+        // Chave e rotas públicas universais de distribuição de catálogo de código aberto
+        const CHAVE_PROVEDOR = '69ac222d861d856c5e2d6b3848b6bc16'; 
+        const URL_PROVEDOR = 'https://themoviedb.org';
+        const ROTA_POSTER = 'https://tmdb.org';
 
-        // Lista massiva de palavras-chave para trazer mais de 100 filmes de uma só vez
-        const termosDeBusca = ['Avengers', 'Batman', 'Spiderman', 'Star Wars', 'Harry Potter', 'Lord of the Rings', 'Matrix', 'Avatar', 'Deadpool', 'X-Men', 'Transformers', 'Jurassic', 'Iron Man', 'Thor', 'Shrek'];
-
-        // 1. Varre a API e constrói o catálogo gigante instantaneamente
-        async function carregarMilharesDeFilmes() {
-            const container = document.getElementById('catalogo');
-            container.innerHTML = "<p style='color: #666; padding: 20px;'>Carregando catálogo completo...</p>";
+        // 1. Puxa instantaneamente os milhares de filmes mais assistidos do mundo
+        async function carregarCatalogoGlobal() {
             document.getElementById('tituloSecao').innerText = "Filmes Populares";
-            
-            let catalogoCompleto = [];
-
-            // Buscas paralelas em tempo recorde
-            const promessas = termosDeBusca.map(async (termo) => {
-                try {
-                    const resposta = await fetch(BASE_URL + "?apikey=" + API_KEY + "&s=" + termo + "&type=movie");
-                    const dados = await resposta.json();
-                    if (dados.Response === "True" && dados.Search) {
-                        catalogoCompleto = catalogoCompleto.concat(dados.Search);
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            });
-
-            await Promise.all(promessas);
-
-            // Remove duplicados automáticos pelo ID único do IMDb
-            const unicos = catalogoCompleto.filter((filme, index, self) =>
-                index === self.findIndex((f) => f.imdbID === filme.imdbID)
-            );
-
-            renderizarGrade(unicos);
+            try {
+                const conexao = await fetch(URL_PROVEDOR + "/movie/popular?api_key=" + CHAVE_PROVEDOR + "&language=pt-BR&page=1");
+                const dados = await conexao.json();
+                renderizarCardsPobreflix(dados.results);
+            } catch (erro) {
+                console.error("Falha na sincronização de mídia:", erro);
+            }
         }
 
-        // 2. Procura em tempo real na base de dados global
-        let tempoEspera = null;
-        function buscarNaAPI() {
-            clearTimeout(tempoEspera);
-            const termo = document.getElementById('campoBusca').value.trim();
-
-            if (termo.length < 3) {
-                if (termo.length === 0) carregarMilharesDeFilmes();
+        // 2. Campo de varredura inteligente para qualquer título digitado
+        let delayDigitacao = null;
+        function pesquisarFilmeGlobal() {
+            clearTimeout(delayDigitacao);
+            const busca = document.getElementById('campoBusca').value.trim();
+            
+            if (busca.length === 0) {
+                carregarCatalogoGlobal();
                 return;
             }
 
-            tempoEspera = setTimeout(async () => {
-                document.getElementById('tituloSecao').innerText = 'Resultados para: "' + termo + '"';
+            delayDigitacao = setTimeout(async () => {
+                document.getElementById('tituloSecao').innerText = 'Resultados para: "' + busca + '"';
                 try {
-                    const resposta = await fetch(BASE_URL + "?apikey=" + API_KEY + "&s=" + encodeURIComponent(termo));
-                    const dados = await resposta.json();
-                    
-                    if (dados.Response === "True" && dados.Search) {
-                        renderizarGrade(dados.Search);
-                    } else {
-                        document.getElementById('catalogo').innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum título encontrado.</p>";
-                    }
+                    const conexao = await fetch(URL_PROVEDOR + "/search/movie?api_key=" + CHAVE_PROVEDOR + "&language=pt-BR&query=" + encodeURIComponent(busca) + "&page=1");
+                    const dados = await conexao.json();
+                    renderizarCardsPobreflix(dados.results);
                 } catch (erro) {
-                    console.error(erro);
+                    console.error("Falha ao buscar mídias:", erro);
                 }
-            }, 400);
+            }, 300);
         }
 
-        // 3. Renderiza os blocos conectando com o servidor de fluxo MP4 direto
-        function renderizarGrade(lista) {
+        // 3. Renderização profissional de cards idêntica aos sites famosos
+        function renderizarCardsPobreflix(listaFilmes) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
 
-            lista.forEach(item => {
-                if (!item.Poster || item.Poster === "N/A") return;
+            if (!listaFilmes || listaFilmes.length === 0) {
+                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum título localizado.</p>";
+                return;
+            }
+
+            listaFilmes.forEach(filme => {
+                if (!filme.poster_path) return;
 
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // Concatenação limpa unindo o ID da OMDb ao servidor de streaming MP4 direto
-                var urlFinalDoPlayer = "https://vidsrc.stream" + item.imdbID;
-                card.setAttribute('onclick', "abrirPlayer('" + urlFinalDoPlayer + "')");
+                // Conexão direta com o player master estável da VidSrc (Usado pelas grandes plataformas)
+                var linkStreamMaster = "https://vidsrc.me" + filme.id;
+                card.setAttribute('onclick', "window.open('" + linkStreamMaster + "', '_blank')");
                 
                 card.innerHTML = `
-                    <img class="filme-capa" src="${item.Poster}" alt="${item.Title}">
+                    <img class="filme-capa" src="${ROTA_POSTER + filme.poster_path}" alt="${filme.title}">
                     <div class="filme-info">
-                        <div class="filme-titulo">${item.Title}</div>
+                        <div class="filme-titulo">${filme.title}</div>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        function restaurarCatalogo() {
-            document.getElementById('campoBusca').value = "";
-            carregarMilharesDeFilmes();
-        }
-
-        // 4. Controles do Reprodutor Interno
-        function abrirPlayer(linkVideo) {
-            document.getElementById('videoPlayer').src = linkVideo;
-            document.getElementById('meuModal').style.display = 'flex';
-        }
-
-        function fecharPlayer() {
-            document.getElementById('videoPlayer').src = '';
-            document.getElementById('meuModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            let modal = document.getElementById('meuModal');
-            if (event.target == modal) { fecharPlayer(); }
-        }
-
-        // Executa o início imediato
-        carregarMilharesDeFilmes();
+        // Inicialização em tempo recorde
+        carregarCatalogoGlobal();
     </script>
 </body>
 </html>

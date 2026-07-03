@@ -1,0 +1,166 @@
+/* Configurações Gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #141414;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* Topo do Site / Navbar */
+header {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 15px 4%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid #222;
+}
+
+.logo {
+    color: #E50914;
+    font-size: 26px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.busca-container {
+    flex-grow: 0.4;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.busca-input {
+    width: 100%;
+    max-width: 280px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #444;
+    background-color: #000000;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.busca-input:focus {
+    border-color: #E50914;
+}
+
+/* Área de Conteúdo */
+.conteudo {
+    padding: 110px 4% 40px 4%;
+}
+
+.secao-titulo {
+    font-size: 22px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    border-left: 4px solid #E50914;
+    padding-left: 12px;
+}
+
+/* Grade Responsiva de Filmes */
+.grade-filmes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 25px;
+}
+
+.filme-card {
+    background-color: #181818;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid #222;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.filme-card:hover {
+    transform: scale(1.05);
+    border-color: #555;
+}
+
+.filme-capa {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}
+
+.filme-info {
+    padding: 10px;
+    background-color: #181818;
+}
+
+.filme-titulo {
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #e5e5e5;
+}
+
+/* Modal do Player de Vídeo */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-conteudo {
+    width: 95%;
+    max-width: 850px;
+    position: relative;
+}
+
+.fechar-modal {
+    position: absolute;
+    top: -45px;
+    right: 0;
+    color: #fff;
+    font-size: 35px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: color 0.2s;
+}
+
+.fechar-modal:hover {
+    color: #E50914;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* Mantém proporção de Cinema 16:9 */
+    height: 0;
+    background-color: #000;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}

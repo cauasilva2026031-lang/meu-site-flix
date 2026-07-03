@@ -27,21 +27,20 @@
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox configurado para aceitar a API Warez internamente e desarmar pop-ups de vírus -->
+                <!-- Sandbox configurado para aceitar a API Warez e travar pop-ups automáticos de vírus -->
                 <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // SUA CHAVE DA OMDB CONFIGURADA
+        // CONFIGURAÇÃO DA OMDB
         const OMDB_API_KEY = '4f830bd7'; 
         const OMDB_BASE_URL = 'https://omdbapi.com';
 
-        // Lista de grandes sucessos para preencher a tela inicial do site automaticamente
+        // Lista de sucessos iniciais
         const termosIniciais = ['Avengers', 'Batman', 'Interstellar', 'Deadpool', 'Spiderman', 'Inside Out', 'Gladiator', 'Matrix'];
 
-        // 1. Carrega os filmes iniciais buscando os termos na OMDb API
         async function carregarFilmesIniciais() {
             const container = document.getElementById('catalogo');
             container.innerHTML = "<p style='color: #666; padding: 20px;'>Carregando catálogo...</p>";
@@ -63,7 +62,6 @@
             renderizarFilmes(todosOsFilmes);
         }
 
-        // 2. Busca automática em tempo real ao digitar na barra de pesquisa
         let timeoutBusca = null;
         function buscarFilmesOMDb() {
             clearTimeout(timeoutBusca);
@@ -74,7 +72,6 @@
                 return;
             }
 
-            // Aguarda o usuário parar de digitar por 500ms antes de chamar a API (Evita travamentos de rede)
             timeoutBusca = setTimeout(async () => {
                 document.getElementById('tituloSecao').innerText = `Resultados para: "${termo}"`;
                 try {
@@ -92,21 +89,20 @@
             }, 500);
         }
 
-        // 3. Monta os cartões na tela usando os dados da OMDb e links internos da Warez
         function renderizarFilmes(listaFilmes) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
 
             listaFilmes.forEach(filme => {
-                const poster = filme.Poster && filme.Poster !== "N/A" ?  filme.Poster : 'https://placeholder.com';
+                const poster = filme.Poster && filme.Poster !== "N/A" ? filme.Poster : 'https://placeholder.com';
                 const imdbID = filme.imdbID;
                 const titulo = filme.Title;
 
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // Pega o código universal do IMDb gerado pelo site OMDb e injeta na API de reprodução Warez embutida
-                const urlPlayerInterno = `https://warezcdn.com{imdbID}`;
+                // CORREÇÃO AQUI: Montando a URL do player juntando o texto com o ID correto do IMDb
+                const urlPlayerInterno = 'https://warezcdn.com' + imdbID;
                 card.setAttribute('onclick', `abrirPlayer('${urlPlayerInterno}')`);
                 
                 card.innerHTML = `
@@ -125,7 +121,6 @@
             carregarFilmesIniciais();
         }
 
-        // 4. Controles do Modal do Player Interno
         function abrirPlayer(linkVideo) {
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
@@ -141,7 +136,6 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicializa o site conectando com a OMDb API
         carregarFilmesIniciais();
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Mega Catálogo</title>
+    <title>MaxxFlixx - MP4 Streaming</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,6 +11,7 @@
     <header>
         <div class="logo" onclick="carregarMilharesDeFilmes()">MaxxFlixx</div>
         <div class="busca-container">
+            <!-- Barra de pesquisa automática conectada ao banco global da OMDb -->
             <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme ou série..." oninput="buscarNaAPI()">
         </div>
     </header>
@@ -18,35 +19,30 @@
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
         <div class="grade-filmes" id="catalogo">
-            <p style="color: #666; padding: 20px;">Gerando catálogo automático...</p>
+            <p style="color: #666; padding: 20px;">Gerando catálogo em MP4...</p>
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo INTERNO Atualizado -->
+    <!-- Modal do Player de Vídeo INTERNO -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <!-- Sandbox removido temporariamente para o novo domínio vidsrc.net carregar a reprodução sem travar -->
+                <!-- Iframe configurado para reproduzir o fluxo MP4 em alta velocidade -->
                 <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // SUA CHAVE ATIVA DA OMDB
+        // CONFIGURAÇÃO COM A SUA CHAVE ATIVA DA OMDB
         const API_KEY = '4f830bd7'; 
-        const BASE_URL = 'https://www.omdbapi.com/';
+        const BASE_URL = 'https://omdbapi.com';
 
-        // Lista massiva de termos de pesquisa para carregar centenas de filmes de uma só vez
-        const termosDeBusca = [
-            'Avengers', 'Batman', 'Spiderman', 'Star Wars', 'Harry Potter', 
-            'Lord of the Rings', 'Matrix', 'Avatar', 'Deadpool', 'X-Men', 
-            'Superman', 'Transformers', 'Jurassic', 'Iron Man', 'Thor', 
-            'Pirates', 'Fast', 'Shrek', 'Disney', 'Marvel', 'Inception'
-        ];
+        // Lista massiva de palavras-chave para trazer mais de 100 filmes de uma só vez
+        const termosDeBusca = ['Avengers', 'Batman', 'Spiderman', 'Star Wars', 'Harry Potter', 'Lord of the Rings', 'Matrix', 'Avatar', 'Deadpool', 'X-Men', 'Transformers', 'Jurassic', 'Iron Man', 'Thor', 'Shrek'];
 
-        // 1. Carrega centenas de títulos mesclando os blocos da API
+        // 1. Varre a API e constrói o catálogo gigante instantaneamente
         async function carregarMilharesDeFilmes() {
             const container = document.getElementById('catalogo');
             container.innerHTML = "<p style='color: #666; padding: 20px;'>Carregando catálogo completo...</p>";
@@ -54,7 +50,7 @@
             
             let catalogoCompleto = [];
 
-            // Executa buscas paralelas para acelerar o carregamento total
+            // Buscas paralelas em tempo recorde
             const promessas = termosDeBusca.map(async (termo) => {
                 try {
                     const resposta = await fetch(BASE_URL + "?apikey=" + API_KEY + "&s=" + termo + "&type=movie");
@@ -69,7 +65,7 @@
 
             await Promise.all(promessas);
 
-            // Remove duplicados pelo ID único do IMDb
+            // Remove duplicados automáticos pelo ID único do IMDb
             const unicos = catalogoCompleto.filter((filme, index, self) =>
                 index === self.findIndex((f) => f.imdbID === filme.imdbID)
             );
@@ -77,7 +73,7 @@
             renderizarGrade(unicos);
         }
 
-        // 2. Busca automática global na base de dados
+        // 2. Procura em tempo real na base de dados global
         let tempoEspera = null;
         function buscarNaAPI() {
             clearTimeout(tempoEspera);
@@ -105,7 +101,7 @@
             }, 400);
         }
 
-        // 3. Monta a grade com o novo endereço do player embutido (.net)
+        // 3. Renderiza os blocos conectando com o servidor de fluxo MP4 direto
         function renderizarGrade(lista) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
@@ -116,8 +112,8 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // MUDANÇA CRÍTICA: Atualizado para o servidor ativo vidsrc.net que funciona via iframe
-                var urlFinalDoPlayer = "https://vidsrc.net" + item.imdbID;
+                // Concatenação limpa unindo o ID da OMDb ao servidor de streaming MP4 direto
+                var urlFinalDoPlayer = "https://vidsrc.stream" + item.imdbID;
                 card.setAttribute('onclick', "abrirPlayer('" + urlFinalDoPlayer + "')");
                 
                 card.innerHTML = `
@@ -135,7 +131,7 @@
             carregarMilharesDeFilmes();
         }
 
-        // 4. Controles do Player Interno
+        // 4. Controles do Reprodutor Interno
         function abrirPlayer(linkVideo) {
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
@@ -151,7 +147,7 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicialização rápida
+        // Executa o início imediato
         carregarMilharesDeFilmes();
     </script>
 </body>

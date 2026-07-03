@@ -1,38 +1,40 @@
-// ==========================
-// CONFIGURAÇÃO DA API
-// ==========================
+// =====================================
+// MAXXFLIX - API.JS
+// =====================================
 
 const API_KEY = "5177d85911655b20a5f8203aec57c6d2";
 
-const API = "https://api.themoviedb.org/3";
+const API_URL = "https://api.themoviedb.org/3";
 
-const IMG = "https://image.tmdb.org/t/p/original";
+const IMAGE = "https://image.tmdb.org/t/p/w500";
 
-const IMG_SMALL = "https://image.tmdb.org/t/p/w500";
+const BACKDROP = "https://image.tmdb.org/t/p/original";
 
 const LANG = "pt-BR";
 
-// ==========================
-// FUNÇÃO GENÉRICA
-// ==========================
+// =====================================
+// REQUISIÇÃO GENÉRICA
+// =====================================
 
-async function buscar(url){
+async function request(endpoint){
 
     try{
 
-        const resposta = await fetch(url);
+        const response = await fetch(
+            `${API_URL}${endpoint}?api_key=${API_KEY}&language=${LANG}`
+        );
 
-        if(!resposta.ok){
+        if(!response.ok){
 
             throw new Error("Erro na API");
 
         }
 
-        return await resposta.json();
+        return await response.json();
 
-    }catch(erro){
+    }catch(error){
 
-        console.error(erro);
+        console.error(error);
 
         return null;
 
@@ -40,150 +42,154 @@ async function buscar(url){
 
 }
 
-// ==========================
-// FILMES POPULARES
-// ==========================
+// =====================================
+// BUSCA COM QUERY
+// =====================================
 
-async function filmesPopulares(){
+async function requestSearch(endpoint,query){
 
-    return await buscar(
-        `${API}/movie/popular?api_key=${API_KEY}&language=${LANG}&page=1`
-    );
+    try{
 
-}
+        const response = await fetch(
+            `${API_URL}${endpoint}?api_key=${API_KEY}&language=${LANG}&query=${encodeURIComponent(query)}`
+        );
 
-// ==========================
-// FILMES EM ALTA
-// ==========================
+        return await response.json();
 
-async function emAlta(){
+    }catch(error){
 
-    return await buscar(
-        `${API}/trending/movie/week?api_key=${API_KEY}&language=${LANG}`
-    );
+        console.error(error);
 
-}
-
-// ==========================
-// MELHOR AVALIADOS
-// ==========================
-
-async function topRated(){
-
-    return await buscar(
-        `${API}/movie/top_rated?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// SÉRIES
-// ==========================
-
-async function series(){
-
-    return await buscar(
-        `${API}/tv/popular?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// BUSCA
-// ==========================
-
-async function pesquisar(texto){
-
-    return await buscar(
-        `${API}/search/multi?api_key=${API_KEY}&language=${LANG}&query=${encodeURIComponent(texto)}`
-    );
-
-}
-
-// ==========================
-// DETALHES
-// ==========================
-
-async function detalhes(id,tipo="movie"){
-
-    return await buscar(
-        `${API}/${tipo}/${id}?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// TRAILER
-// ==========================
-
-async function trailer(id,tipo="movie"){
-
-    return await buscar(
-        `${API}/${tipo}/${id}/videos?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// ELENCO
-// ==========================
-
-async function elenco(id,tipo="movie"){
-
-    return await buscar(
-        `${API}/${tipo}/${id}/credits?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// GÊNEROS
-// ==========================
-
-async function generosFilme(){
-
-    return await buscar(
-        `${API}/genre/movie/list?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// LANÇAMENTOS
-// ==========================
-
-async function lancamentos(){
-
-    return await buscar(
-        `${API}/movie/now_playing?api_key=${API_KEY}&language=${LANG}`
-    );
-
-}
-
-// ==========================
-// IMAGENS
-// ==========================
-
-function poster(caminho){
-
-    if(!caminho){
-
-        return "assets/no-image.png";
+        return null;
 
     }
 
-    return IMG_SMALL + caminho;
+}
+
+// =====================================
+// FILMES POPULARES
+// =====================================
+
+async function filmesPopulares(){
+
+    return await request("/movie/popular");
 
 }
 
-function backdrop(caminho){
+// =====================================
+// EM ALTA
+// =====================================
 
-    if(!caminho){
+async function emAlta(){
+
+    return await request("/trending/movie/week");
+
+}
+
+// =====================================
+// TOP RATED
+// =====================================
+
+async function topRated(){
+
+    return await request("/movie/top_rated");
+
+}
+
+// =====================================
+// LANÇAMENTOS
+// =====================================
+
+async function lancamentos(){
+
+    return await request("/movie/now_playing");
+
+}
+
+// =====================================
+// SÉRIES
+// =====================================
+
+async function series(){
+
+    return await request("/tv/popular");
+
+}
+
+// =====================================
+// BUSCA
+// =====================================
+
+async function pesquisar(texto){
+
+    return await requestSearch("/search/multi",texto);
+
+}
+
+// =====================================
+// DETALHES
+// =====================================
+
+async function detalhes(id,tipo="movie"){
+
+    return await request(`/${tipo}/${id}`);
+
+}
+
+// =====================================
+// TRAILER
+// =====================================
+
+async function trailer(id,tipo="movie"){
+
+    return await request(`/${tipo}/${id}/videos`);
+
+}
+
+// =====================================
+// ELENCO
+// =====================================
+
+async function elenco(id,tipo="movie"){
+
+    return await request(`/${tipo}/${id}/credits`);
+
+}
+
+// =====================================
+// RECOMENDAÇÕES
+// =====================================
+
+async function recomendacoes(id,tipo="movie"){
+
+    return await request(`/${tipo}/${id}/recommendations`);
+
+}
+
+// =====================================
+// IMAGENS
+// =====================================
+
+function poster(path){
+
+    if(!path){
+
+        return "https://placehold.co/500x750?text=Sem+Imagem";
+
+    }
+
+    return IMAGE + path;
+
+}
+
+function backdrop(path){
+
+    if(!path){
 
         return "";
 
     }
 
-    return IMG + caminho;
+    return BACKDROP + path;
 
 }

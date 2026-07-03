@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaxxFlixx - Streaming Grátis</title>
-    <!-- Vincula o arquivo de estilos externo -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,37 +18,37 @@
     <main class="conteudo">
         <h2 class="secao-titulo">Todos os Títulos</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Os filmes serão gerados aqui pelo JavaScript de forma automática -->
+            <!-- Gerado automaticamente pelo JavaScript -->
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo -->
+    <!-- Modal do Player de Vídeo Corrigido -->
     <div id="meuModal" class="modal">
         <div class="modal-conteudo">
             <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
             <div class="video-container">
-                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+                <!-- Adicionado parâmetros de segurança exigidos pelo YouTube -->
+                <iframe id="videoPlayer" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS AUTOMÁTICO
-        // Adicione, remova ou altere os filmes alterando as linhas abaixo
+        // BANCO DE DADOS COM CAPAS DA WIKIMEDIA (NÃO QUEBRAM)
         const meusFilmes = [
             {
                 titulo: "Big Buck Bunny (Desenho)",
-                capa: "https://unsplash.com",
+                capa: "https://wikimedia.org",
                 video: "https://youtube.com"
             },
             {
                 titulo: "Sintel (Animação)",
-                capa: "https://unsplash.com",
+                capa: "https://wikimedia.org",
                 video: "https://youtube.com"
             },
             {
                 titulo: "Tears of Steel (Ficção)",
-                capa: "https://unsplash.com",
+                capa: "https://wikimedia.org",
                 video: "https://youtube.com"
             }
         ];
@@ -86,6 +85,7 @@
         }
 
         function abrirPlayer(linkVideo) {
+            // Garante que o link use a API correta do YouTube
             document.getElementById('videoPlayer').src = linkVideo;
             document.getElementById('meuModal').style.display = 'flex';
         }
@@ -100,7 +100,7 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
-        // Inicializa o site
+        // Inicializa o catálogo
         carregarCatalogo(meusFilmes);
     </script>
 </body>

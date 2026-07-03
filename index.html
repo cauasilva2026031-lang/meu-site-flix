@@ -18,7 +18,7 @@
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Disponíveis</h2>
         <div class="grade-filmes" id="catalogo">
-            <!-- Gerado em milissegundos aqui -->
+            <!-- Os cards serão criados instantaneamente pelo JavaScript -->
         </div>
     </main>
 
@@ -67,7 +67,7 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // CONCATENAÇÃO SEGURA: Monta o link somando os textos para evitar o erro de sintaxe literal
+                // CORREÇÃO FINAL: União de textos tradicional com '+' para eliminar erros literais
                 const urlPlayer = "https://superflixapi.pro" + filme.id;
                 card.setAttribute('onclick', "abrirPlayer('" + urlPlayer + "')");
                 
@@ -118,6 +118,7 @@
             if (event.target == modal) { fecharPlayer(); }
         }
 
+        // Inicializa o catálogo
         exibirCatalogo(catálogoFilmes);
     </script>
 </body>

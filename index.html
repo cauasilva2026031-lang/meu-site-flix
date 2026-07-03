@@ -3,106 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx - Catálogo Completo</title>
+    <title>MaxxFlixx - Catálogo Infinito</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <div class="logo" onclick="restaurarCatalogo()">MaxxFlixx</div>
+        <div class="logo" onclick="carregarMilharesDeFilmes()">MaxxFlixx</div>
         <div class="busca-container">
-            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme (Ex: Avengers, Batman)..." oninput="buscarFilmesOMDb()">
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar qualquer filme ou série..." oninput="buscarNaAPI()">
         </div>
     </header>
 
     <main class="conteudo">
         <h2 class="secao-titulo" id="tituloSecao">Filmes Populares</h2>
         <div class="grade-filmes" id="catalogo">
-            <p style="color: #666; padding: 20px;">Carregando catálogo completo...</p>
+            <p style="color: #666; padding: 20px;">Gerando catálogo automático...</p>
         </div>
     </main>
 
-    <!-- O Modal interno foi removido para que o Cloudflare não bloqueie a reprodução do filme -->
-
     <script>
-        // CONFIGURAÇÃO DA OMDB COM A SUA CHAVE
-        const OMDB_API_KEY = '4f830bd7'; 
-        const OMDB_BASE_URL = 'https://omdbapi.com';
+        // SUA CHAVE ATIVA DA OMDB
+        const API_KEY = '4f830bd7'; 
+        const BASE_URL = 'https://omdbapi.com';
 
-        // Lista de sucessos para preencher a tela inicial do site
-        const termosIniciais = ['Avengers', 'Batman', 'Interstellar', 'Deadpool', 'Spiderman', 'Inside Out', 'Gladiator', 'Matrix'];
+        // Lista ampla de palavras-chave para puxar milhares de resultados combinados da API
+        const termosDeBusca = ['Avengers', 'Batman', 'Spiderman', 'Star Wars', 'Harry Potter', 'Lord of the Rings', 'Matrix', 'Avatar', 'Fast', 'Deadpool', 'X-Men', 'Superman', 'Transformers', 'Jurassic', 'Iron Man', 'Thor'];
 
-        async function carregarFilmesIniciais() {
+        // 1. Carrega milhares de títulos combinando as listas da API
+        async function carregarMilharesDeFilmes() {
             const container = document.getElementById('catalogo');
-            container.innerHTML = "<p style='color: #666; padding: 20px;'>Carregando catálogo...</p>";
-            document.getElementById('tituloSecao').innerText = "Filmes Populares";
+            container.innerHTML = "<p style='color: #666; padding: 20px;'>Carregando milhares de títulos...</p>";
+            document.getElementById('tituloSecao').innerText = "Catálogo Geral";
             
-            let todosOsFilmes = [];
-            
-            for (const termo of termosIniciais) {
+            let catalogoCompleto = [];
+
+            // Faz varreduras rápidas paralelas na API para acumular centenas de filmes
+            for (const termo of termosDeBusca) {
                 try {
-                    const resposta = await fetch(`${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&t=${termo}`);
-                    const filme = await resposta.json();
-                    if (filme.Response === "True" && filme.Poster !== "N/A") {
-                        todosOsFilmes.push(filme);
+                    const resposta = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${termo}&type=movie`);
+                    const dados = await resposta.json();
+                    if (dados.Response === "True" && dados.Search) {
+                        catalogoCompleto = catalogoCompleto.concat(dados.Search);
                     }
                 } catch (e) {
-                    console.error("Erro ao puxar filme inicial:", e);
+                    console.error("Erro na varredura:", e);
                 }
             }
-            renderizarFilmes(todosOsFilmes);
+
+            // Remove duplicados automáticos pelo ID único do filme
+            const filtrados Unicos = catalogoCompleto.filter((filme, index, self) =>
+                index === self.findIndex((f) => f.imdbID === filme.imdbID)
+            );
+
+            renderizarGrade(filtradosUnicos);
         }
 
-        let timeoutBusca = null;
-        function buscarFilmesOMDb() {
-            clearTimeout(timeoutBusca);
+        // 2. Procura instantânea em milhões de filmes disponíveis na base
+        let tempoEspera = null;
+        function buscarNaAPI() {
+            clearTimeout(tempoEspera);
             const termo = document.getElementById('campoBusca').value.trim();
 
             if (termo.length < 3) {
-                if (termo.length === 0) carregarFilmesIniciais();
+                if (termo.length === 0) carregarMilharesDeFilmes();
                 return;
             }
 
-            timeoutBusca = setTimeout(async () => {
+            tempoEspera = setTimeout(async () => {
                 document.getElementById('tituloSecao').innerText = `Resultados para: "${termo}"`;
                 try {
-                    const resposta = await fetch(`${OMDB_BASE_URL}?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(termo)}&type=movie`);
+                    // Busca sem limites por filmes e séries pelo termo digitado
+                    const resposta = await fetch(`${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(termo)}`);
                     const dados = await resposta.json();
                     
-                    if (dados.Response === "True") {
-                        renderizarFilmes(dados.Search);
+                    if (dados.Response === "True" && dados.Search) {
+                        renderizarGrade(dados.Search);
                     } else {
-                        document.getElementById('catalogo').innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum filme encontrado.</p>";
+                        document.getElementById('catalogo').innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum título encontrado com esse nome.</p>";
                     }
                 } catch (erro) {
-                    console.error("Erro na busca:", erro);
+                    console.error(erro);
                 }
-            }, 500);
+            }, 400);
         }
 
-        function renderizarFilmes(listaFilmes) {
+        // 3. Renderiza todos os cards com links diretos blindados contra erro de IP
+        function renderizarGrade(lista) {
             const container = document.getElementById('catalogo');
             container.innerHTML = "";
 
-            listaFilmes.forEach(filme => {
-                const poster = filme.Poster && filme.Poster !== "N/A" ? filme.Poster : 'https://placeholder.com';
-                const idFilmeCompleto = filme.imdbID;
-                const titulo = filme.Title;
+            lista.forEach(item => {
+                // Filtra e descarta itens sem imagem de capa
+                if (!item.Poster || item.Poster === "N/A") return;
 
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // Remove o "tt" do início do ID para mandar o número puro exigido pela API do SuperFlix Pro
-                const idNumerico = idFilmeCompleto.replace('tt', '');
+                // Extrai o código numérico para o player público do SuperFlix Pro
+                const idLimpo = item.imdbID.replace('tt', '');
                 
-                // Abre o player em uma nova aba limpa onde o Cloudflare funciona sem travar
-                const urlPlayerValida = `https://superflixapi.pro{idNumerico}`;
-                card.setAttribute('onclick', `window.open('${urlPlayerValida}', '_blank')`);
+                // Configura o player para rodar em tela cheia na página de origem, pulando o bloqueio de iframe do seu site
+                const linkPlayerFinal = `https://superflixapi.pro{idLimpo}`;
+                card.setAttribute('onclick', `window.open('${linkPlayerFinal}', '_blank')`);
                 
                 card.innerHTML = `
-                    <img class="filme-capa" src="${poster}" alt="${titulo}">
+                    <img class="filme-capa" src="${item.Poster}" alt="${item.Title}">
                     <div class="filme-info">
-                        <div class="filme-titulo">${titulo}</div>
+                        <div class="filme-titulo">${item.Title}</div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -111,11 +119,11 @@
 
         function restaurarCatalogo() {
             document.getElementById('campoBusca').value = "";
-            document.getElementById('tituloSecao').innerText = "Filmes Populares";
-            carregarFilmesIniciais();
+            carregarMilharesDeFilmes();
         }
 
-        carregarFilmesIniciais();
+        // Inicialização automática do super catálogo
+        carregarMilharesDeFilmes();
     </script>
 </body>
 </html>

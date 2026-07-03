@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MaxxFlixx - Streaming Grátis</title>
+    <!-- Vincula o arquivo de estilos externo -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">MaxxFlixx</div>
+        <div class="busca-container">
+            <input type="text" id="campoBusca" class="busca-input" placeholder="Pesquisar filme ou série..." oninput="filtrarFilmes()">
+        </div>
+    </header>
+
+    <main class="conteudo">
+        <h2 class="secao-titulo">Todos os Títulos</h2>
+        <div class="grade-filmes" id="catalogo">
+            <!-- Os filmes serão gerados aqui pelo JavaScript de forma automática -->
+        </div>
+    </main>
+
+    <!-- Modal do Player de Vídeo -->
+    <div id="meuModal" class="modal">
+        <div class="modal-conteudo">
+            <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
+            <div class="video-container">
+                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BANCO DE DADOS AUTOMÁTICO
+        // Adicione, remova ou altere os filmes alterando as linhas abaixo
+        const meusFilmes = [
+            {
+                titulo: "Big Buck Bunny (Desenho)",
+                capa: "https://unsplash.com",
+                video: "https://youtube.com"
+            },
+            {
+                titulo: "Sintel (Animação)",
+                capa: "https://unsplash.com",
+                video: "https://youtube.com"
+            },
+            {
+                titulo: "Tears of Steel (Ficção)",
+                capa: "https://unsplash.com",
+                video: "https://youtube.com"
+            }
+        ];
+
+        function carregarCatalogo(listaDeFilmes) {
+            const container = document.getElementById('catalogo');
+            container.innerHTML = "";
+
+            if(listaDeFilmes.length === 0) {
+                container.innerHTML = "<p style='color:#666; padding: 20px;'>Nenhum título encontrado.</p>";
+                return;
+            }
+
+            listaDeFilmes.forEach(filme => {
+                const card = document.createElement('div');
+                card.className = 'filme-card';
+                card.setAttribute('onclick', `abrirPlayer('${filme.video}')`);
+                card.innerHTML = `
+                    <img class="filme-capa" src="${filme.capa}" alt="${filme.titulo}">
+                    <div class="filme-info">
+                        <div class="filme-titulo">${filme.titulo}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filtrarFilmes() {
+            const termoBusca = document.getElementById('campoBusca').value.toLowerCase();
+            const filmesFiltrados = meusFilmes.filter(filme => 
+                filme.titulo.toLowerCase().includes(termoBusca)
+            );
+            carregarCatalogo(filmesFiltrados);
+        }
+
+        function abrirPlayer(linkVideo) {
+            document.getElementById('videoPlayer').src = linkVideo;
+            document.getElementById('meuModal').style.display = 'flex';
+        }
+
+        function fecharPlayer() {
+            document.getElementById('videoPlayer').src = '';
+            document.getElementById('meuModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let modal = document.getElementById('meuModal');
+            if (event.target == modal) { fecharPlayer(); }
+        }
+
+        // Inicializa o site
+        carregarCatalogo(meusFilmes);
+    </script>
+</body>
+</html>

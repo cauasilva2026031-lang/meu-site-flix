@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaxxFlixx V2 - Streaming Completo</title>
+    <title>MaxxFlixx - Catálogo Automático</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -22,20 +22,14 @@
         </div>
     </main>
 
-    <!-- Modal do Player de Vídeo INTERNO -->
-    <div id="meuModal" class="modal">
-        <div class="modal-conteudo">
-            <button class="fechar-modal" onclick="fecharPlayer()">&times;</button>
-            <div class="video-container">
-                <iframe id="videoPlayer" src="" scrolling="no" frameborder="0" allowfullscreen allow="autoplay; encrypted-media" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
-            </div>
-        </div>
-    </div>
+    <!-- O Modal do player interno foi removido para evitar o bloqueio e telas de erro do navegador -->
 
     <script>
+        // CONFIGURAÇÃO DA OMDB COM A SUA CHAVE PESSOAL ATIVA
         const OMDB_API_KEY = '4f830bd7'; 
         const OMDB_BASE_URL = 'https://omdbapi.com';
 
+        // Lista de sucessos para a página inicial
         const termosIniciais = ['Avengers', 'Batman', 'Interstellar', 'Deadpool', 'Spiderman', 'Inside Out', 'Gladiator', 'Matrix'];
 
         async function carregarFilmesIniciais() {
@@ -98,9 +92,9 @@
                 const card = document.createElement('div');
                 card.className = 'filme-card';
                 
-                // Forçando a montagem limpa do link para a Vercel ler do zero
-                const linkFinal = "https://warezcdn.link" + idFilme;
-                card.setAttribute('onclick', "abrirPlayer('" + linkFinal + "')");
+                // SOLUÇÃO: O clique direciona para o reprodutor externo oficial em tela cheia na nova aba sem travar o site
+                const linkPlayerExterno = "https://warezcdn.link" + idFilme;
+                card.setAttribute('onclick', `window.open('${linkPlayerExterno}', '_blank')`);
                 
                 card.innerHTML = `
                     <img class="filme-capa" src="${poster}" alt="${titulo}">
@@ -118,21 +112,7 @@
             carregarFilmesIniciais();
         }
 
-        function abrirPlayer(linkVideo) {
-            document.getElementById('videoPlayer').src = linkVideo;
-            document.getElementById('meuModal').style.display = 'flex';
-        }
-
-        function fecharPlayer() {
-            document.getElementById('videoPlayer').src = '';
-            document.getElementById('meuModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            let modal = document.getElementById('meuModal');
-            if (event.target == modal) { fecharPlayer(); }
-        }
-
+        // Inicializa o site puxando dados da API com sua chave
         carregarFilmesIniciais();
     </script>
 </body>
